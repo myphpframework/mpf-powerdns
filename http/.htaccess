@@ -1,0 +1,13 @@
+php_value auto_prepend_file "../bootstrap.php"
+
+Options -Indexes +FollowSymLinks
+DirectoryIndex index.php
+
+RewriteEngine On
+
+# Leave requests for .php files alone (if the file exists anyway)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule \.php$ - [L]
+
+# Rewrite everything else to index.php
+RewriteRule ^/?(.*)$ index.php [L]
