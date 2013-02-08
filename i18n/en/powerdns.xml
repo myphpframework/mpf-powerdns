@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE i18n SYSTEM "http://myphpframework.com/dtd/i18n.dtd" >
+<i18n>
+    <country code="CA">
+        <text id="invalidZone">No zone could be found for the domain you provided in your request</text>
+        <text id="invalidRecordId">The record id must be an integer</text>
+        <text id="invalidDomain">The domain name "@name@" is invalid</text>
+        <text id="invalidDomainType">The domain type "@type@" is invalid, it must be one of the following: NATIVE, MASTER, SLAVE, SUPERSLAVE</text>
+        <text id="invalidRecordType">The record type "@type@" is invalid, it must be one of the following: SOA, NS, MX, A, AAAA, CNAME, TXT, PTR, HWINFO, SRV, NAPTR</text>
+    </country>
+</i18n>
