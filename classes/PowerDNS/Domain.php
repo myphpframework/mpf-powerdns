@@ -54,12 +54,27 @@ class Domain extends \MPF\Db\Model {
     protected $account = null;
 
     /**
+     *
+     * @type foreign
+     * @table user_domains
+     * @linkname domain_id
+     * @relation onetoone
+     */
+    protected $groupId=0;
+
+    /**
+     *
+     * @type foreign
+     * @table user_domains
+     * @linkname domain_id
+     * @relation onetoone
+     */
+    protected $userId=0;
+
+    /**
      * Records for the Zone
      *
      * @type foreign
-     * @table records
-     * @model PowderDNS\Record
-     * @relation onetomany
      */
     protected $records;
 
@@ -118,7 +133,7 @@ class Domain extends \MPF\Db\Model {
      * @param \MPF\User $user
      * @return \MPF\Db\ModelResult
      */
-    public static function byUser(\MPF\User $user, $groupId=0) {
+    public static function byUser(\MPF\User $user, $groupId=0, \MPF\Db\Page $page=null) {
         $userId = $user->getField('id');
         $userId->setLinkFieldName('userId');
 
@@ -133,7 +148,7 @@ class Domain extends \MPF\Db\Model {
         $domainId->setLinkFieldName('domain_id');
 
         $linkTable = new \MPF\Db\ModelLinkTable($knownFields, $domainId, 'powerdns', 'user_domains');
-        $result = self::byLinkTable($linkTable);
+        $result = self::byLinkTable($linkTable, $page);
 
         if ($result->rowsTotal == 0) {
           $result->free();
@@ -145,14 +160,10 @@ class Domain extends \MPF\Db\Model {
 
     /**
      *
-     * @return \MPF\Db\Entry
+     * @return integer
      */
     public function getOwnerId() {
-        $dbLayer = \MPF\Db::byName($this->getDatabase());
-        $result = $dbLayer->selectByTableFields('user_domains', array('domain_id' => $this->getId()));
-        $dbEntry = $result->fetch();
-        $result->free();
-        return (int)$dbEntry['userId'];
+        return (int)$this->userId;
     }
 
     /**

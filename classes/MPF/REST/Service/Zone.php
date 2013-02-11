@@ -19,8 +19,10 @@ class Zone extends \MPF\REST\Service {
                 'GET' => array(
                     'type' => 'optional',
                     'groupId' => 'optional',
-                    'limit' => 'optional',
-                    'page' => 'optional',
+                    'page' => array(
+                        'number' => 'optional',
+                        'amount' => 'optional',
+                    ),
                     'records' => 'option',
                 ),
             );
@@ -200,12 +202,25 @@ class Zone extends \MPF\REST\Service {
         if (!$id) {
             $fetchRecords = array_key_exists('includeRecords', $data);
             $groupId = (array_key_exists('groupId', $data) ? $data['groupId'] : 0);
-            $result = \PowerDNS\Domain::byUser($this->user, $groupId);
+
+            $page = null;
+            if (array_key_exists('page', $data) ) {
+                $pageNumber = (array_key_exists('number', $data['page']) ? (int)$data['page']['number'] : 1);
+                $page = (array_key_exists('page', $data) ? new \MPF\Db\Page($pageNumber, $data['page']['amount']) : null);
+            }
+
+            $result = \PowerDNS\Domain::byUser($this->user, $groupId, $page);
+
             $domains = array();
             if ($result) {
                 while ($domain = $result->fetch()) {
                     $domains[] = $domain->toArray($fetchRecords);
                 }
+            }
+
+            // if we request pages we add a special http header for the total records found
+            if ($page) {
+                header('X-MPF-Total-Entries: '.$page->total);
             }
 
             $this->setResponseCode(self::HTTPCODE_OK);
